@@ -1,4 +1,4 @@
-import { FaSearch } from "react-icons/fa";
+// import { FaSearch } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const Header = () => {
@@ -14,7 +14,7 @@ const Header = () => {
             placeholder="Search"
             className="px-2 py-1 rounded-md text-black text-2xl focus:outline-none w-24 sm:w-64"
           />
-          <FaSearch color="black" />
+          {/* <FaSearch color="black" /> */}
         </form>
       </div>
       <div className="flex items-center gap-6 mr-10">
