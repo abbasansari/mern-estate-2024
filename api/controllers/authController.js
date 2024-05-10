@@ -40,6 +40,7 @@ export const sigInController = async (req, res, next) => {
       success: true,
       message: "User signed in",
       user: {
+        id: user._id,
         username: user.username,
         email: user.email,
       },
