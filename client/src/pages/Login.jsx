@@ -1,12 +1,19 @@
 import axios from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  signInFailure,
+  signInStart,
+  signInSuccess,
+} from "../redux/user/userSlice";
 
 const Login = () => {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, error } = useSelector((state) => state.user);
+
+  const dispatch = useDispatch();
 
   const navigate = useNavigate();
 
@@ -21,20 +28,19 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setIsLoading(true);
+      dispatch(signInStart());
       const res = await axios.post("/api/v1/auth/sign-in", formData);
-      setIsLoading(false);
+
       if (!res.data.success) {
-        setError(res.data.error);
+        dispatch(signInFailure(res.data.error));
         toast.error(res.data.error);
       } else {
-        setError(null);
+        dispatch(signInSuccess(res.data));
         toast.success(res.data.message);
         navigate("/");
       }
     } catch (error) {
-      setIsLoading(false);
-      setError(error.response.data.message);
+      dispatch(signInFailure(error.response.data.message));
       toast.error(error.response.data.message);
       console.error(error);
     }
