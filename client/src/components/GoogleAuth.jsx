@@ -13,11 +13,13 @@ const GoogleAuth = () => {
       //we are passing firebase app to let recognize gpogle which app is requesting
       const auth = getAuth(app);
       const result = await signInWithPopup(auth, provider);
+      // console.log(result.user.uid);
       //sending to data to backend api to save the data in database
       const res = await axios.post("/api/v1/auth/google", {
         username: result.user.displayName,
         email: result.user.email,
         photo: result.user.photoURL,
+        _id: result.user.uid,
       });
 
       dispatch(signInSuccess(res.data));
