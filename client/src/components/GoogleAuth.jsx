@@ -4,8 +4,11 @@ import { app } from "../firebase";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { signInSuccess } from "../redux/user/userSlice";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const GoogleAuth = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const handleGoogleClick = async () => {
     try {
@@ -21,8 +24,10 @@ const GoogleAuth = () => {
         photo: result.user.photoURL,
         _id: result.user.uid,
       });
-
+      console.log(res.data);
       dispatch(signInSuccess(res.data));
+      toast.success(res.data.message);
+      navigate("/");
     } catch (error) {
       console.log("Google login failed", error);
     }

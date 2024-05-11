@@ -181,6 +181,7 @@ export const googleController = async (req, res, next) => {
           id: user._id,
           username: user.username,
           email: user.email,
+          avatar: user.picture,
         },
         token,
       });
@@ -215,6 +216,7 @@ export const googleController = async (req, res, next) => {
           id: newUser._id,
           username: newUser.username,
           email: newUser.email,
+          avatar: newUser.picture,
         },
         token,
       });
