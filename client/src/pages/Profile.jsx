@@ -15,6 +15,9 @@ import {
   deleteUserFailure,
   deleteUserStart,
   deleteUserSuccess,
+  signOutUserFailure,
+  signOutUserStart,
+  signOutUserSuccess,
 } from "../redux/user/userSlice";
 import { Navigate } from "react-router-dom";
 
@@ -94,6 +97,21 @@ const Profile = () => {
       dispatch(deleteUserFailure(error.data.message));
     }
   };
+
+  //handleSignOutUser
+  const handleSignOutUser = async () => {
+    try {
+      dispatch(signOutUserStart());
+      const res = await axios.get("/api/v1/auth/sign-out");
+      if (res.data.success === false) {
+        dispatch(signOutUserFailure(res.data.message));
+        return;
+      }
+      dispatch(signOutUserSuccess(res.data.message));
+    } catch (error) {
+      dispatch(signOutUserFailure(error.data.message));
+    }
+  };
   return (
     <div className="p-4 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -162,7 +180,12 @@ const Profile = () => {
           Delete account
         </span>
 
-        <span className="text-red-600 cursor-pointer ">Sign out</span>
+        <span
+          onClick={handleSignOutUser}
+          className="text-red-600 cursor-pointer "
+        >
+          Sign out
+        </span>
       </div>
       <p className="text-red-700 mt-5">{error && error}</p>
       <p className="text-green-700 mt-5">

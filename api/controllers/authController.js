@@ -226,3 +226,17 @@ export const googleController = async (req, res, next) => {
     next(error);
   }
 };
+
+// signOutController
+
+export const signOutController = (req, res, next) => {
+  try {
+    res.clearCookie("access_token");
+    return res.status(200).send({
+      success: true,
+      message: "User signed out",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
