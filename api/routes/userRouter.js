@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  deleteUserController,
   updateUserController,
   userController,
 } from "../controllers/userController.js";
@@ -11,5 +12,8 @@ router.get("/test", userController);
 
 // Update User || POST
 router.post("/update/:id", verifyToken, updateUserController);
+
+// Delete User || Delete
+router.delete("/delete/:id", verifyToken, deleteUserController);
 
 export default router;

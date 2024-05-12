@@ -48,7 +48,25 @@ export const updateUserController = async (req, res, next) => {
         username: user.username,
         email: user.email,
         avatar: user.picture,
+        id: user._id,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//deleteUserController
+
+export const deleteUserController = async (req, res, next) => {
+  if (req.user.id !== req.params.id)
+    return next(errorHandler(401, "You can only delete your own account"));
+  try {
+    const user = await userModel.findByIdAndDelete(req.params.id);
+    res.clearCookie("access_token");
+    return res.status(200).send({
+      success: true,
+      message: "User deleted",
     });
   } catch (error) {
     next(error);
