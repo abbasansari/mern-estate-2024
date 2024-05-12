@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
 import {
   getDownloadURL,
   getStorage,
@@ -7,9 +8,14 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../firebase";
+import {
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+} from "../redux/user/userSlice";
 
 const Profile = () => {
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, loading, error } = useSelector((state) => state.user);
   const profileRef = useRef(null);
 
   //to store profile pic in state
@@ -17,6 +23,8 @@ const Profile = () => {
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (file) handleFileUpload(file);
@@ -45,25 +53,31 @@ const Profile = () => {
       }
     );
   };
-  // // const handleFileUpload = (file) => {
-  // //   const storage = getStorage(app);
-  // //   console.log("handleFileUpload", file);
-  // //   // if client upload 2 pics which will goive error to avoid it we are adding date and time with name of file
-  // //   const fileName = new Date().getTime() + file.name;
-  // //   const storageRef = ref(storage, fileName);
-  // //   const uploadTask = uploadBytesResumable(storageRef, file);
 
-  // //   uploadTask.on("state_changed", (snapshot) => {
-  // //     const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-  // //     console.log(`Upload is ${progress} % done`);
-  // //   });
-  // };
+  //handleChange
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  //handleSubmit
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch(updateUserStart());
+      const res = await axios.post(
+        `/api/v1/user/update/${currentUser.id}`,
+        formData
+      );
+      dispatch(updateUserSuccess(res.data.newUser));
+      setUpdateSuccess(true);
+    } catch (error) {
+      dispatch(updateUserFailure(error.data.message));
+    }
+  };
   return (
     <div className="p-4 max-w-lg mx-auto">
-      <h1 className="text-3xl font-semibold text-center my-7">
-        {currentUser.email} Profile
-      </h1>
-      <form className="flex flex-col gap-4">
+      <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <input
           onChange={(e) => setFile(e.target.files[0])}
           type="file"
@@ -92,24 +106,32 @@ const Profile = () => {
         </p>{" "}
         <input
           type="text"
+          defaultValue={currentUser.username}
           placeholder="Username"
           className="p-3 border rounded-lg"
           id="username"
+          onChange={handleChange}
         />
         <input
           type="email"
+          defaultValue={currentUser.email}
           placeholder="email"
           className="p-3 border rounded-lg"
           id="email"
+          onChange={handleChange}
         />
         <input
           type="password"
           placeholder="password"
           className="p-3 border rounded-lg"
           id="password"
+          onChange={handleChange}
         />
-        <button className="bg-slate-600 uppercase text-white p-3 rounded-lg hover:opacity-95 disabled:opacity-80">
-          Update
+        <button
+          disabled={loading}
+          className="bg-slate-600 uppercase text-white p-3 rounded-lg hover:opacity-95 disabled:opacity-80"
+        >
+          {loading ? "Loading..." : "Update"}
         </button>
       </form>
       <div className="flex justify-between mt-4">
@@ -117,6 +139,10 @@ const Profile = () => {
 
         <span className="text-red-600 cursor-pointer ">Sign out</span>
       </div>
+      <p className="text-red-700 mt-5">{error && error}</p>
+      <p className="text-green-700 mt-5">
+        {updateSuccess && "Profile updated!"}
+      </p>
     </div>
   );
 };

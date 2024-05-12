@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 
 const Header = () => {
   const { currentUser } = useSelector((state) => state.user);
-  console.log("currentUser", currentUser);
   return (
     <nav className="flex items-center justify-between p-4 bg-slate-600 text-yellow-50">
       <div className="flex items-center gap-44">
