@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import userRouter from "./routes/userRouter.js";
 import authRouter from "./routes/authRouter.js";
+import cookieParser from "cookie-parser";
 const app = express();
 app.use(express.json());
 dotenv.config();
@@ -13,9 +14,10 @@ dotenv.config();
 connectDB();
 //middlewares
 app.use(morgan("dev"));
+app.use(cookieParser());
 //routes
 app.use("/api/v1/user", userRouter);
-
+//authentication rutes
 app.use("/api/v1/auth", authRouter);
 
 //Error Middleware
