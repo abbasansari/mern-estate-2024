@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import userRouter from "./routes/userRouter.js";
 import authRouter from "./routes/authRouter.js";
+import listingRouter from "./routes/listingRouter.js";
 import cookieParser from "cookie-parser";
 const app = express();
 app.use(express.json());
@@ -19,6 +20,8 @@ app.use(cookieParser());
 app.use("/api/v1/user", userRouter);
 //authentication rutes
 app.use("/api/v1/auth", authRouter);
+//Listing routes
+app.use("/api/v1/listing", listingRouter);
 
 //Error Middleware
 app.use((err, req, res, next) => {
