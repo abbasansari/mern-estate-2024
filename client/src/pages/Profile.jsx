@@ -131,6 +131,29 @@ const Profile = () => {
       toast.error("Error Fetching Your Adds");
     }
   };
+
+  //handleDeleteListing
+  const handleDeleteListing = async (listingId) => {
+    console.log(listingId);
+    try {
+      const res = await axios.delete(`/api/v1/listing/delete/${listingId}`);
+      if (res.data.success === false) {
+        toast.error(res.data.message);
+        return;
+      } else {
+        toast.success(res.data.message);
+        handleListingClick();
+      }
+    } catch (error) {
+      console.log(error.message);
+      toast.error(error.message);
+    }
+  };
+
+  //useEffect
+  // useEffect(() => {
+  //   handleListingClick();
+  // }, []);
   return (
     <div className="p-4 max-w-lg mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">Profile</h1>
@@ -246,7 +269,12 @@ const Profile = () => {
                 <p>{listing.name}</p>
               </Link>
               <div className="flex flex-col">
-                <button className="text-red-700 ">Delete</button>
+                <button
+                  onClick={() => handleDeleteListing(listing._id)}
+                  className="text-red-700 "
+                >
+                  Delete
+                </button>
                 <button className="text-green-700 ">Edit</button>
               </div>
             </div>
