@@ -20,6 +20,7 @@ import {
   signOutUserSuccess,
 } from "../redux/user/userSlice";
 import { Link, Navigate } from "react-router-dom";
+import { toast } from "react-hot-toast";
 
 const Profile = () => {
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -31,6 +32,7 @@ const Profile = () => {
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [listings, setListings] = useState([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -110,6 +112,23 @@ const Profile = () => {
       dispatch(signOutUserSuccess(res.data.message));
     } catch (error) {
       dispatch(signOutUserFailure(error.data.message));
+    }
+  };
+
+  //handleListingClick
+  const handleListingClick = async () => {
+    try {
+      const res = await axios.get(`/api/v1/user/listing/${currentUser.id}`);
+      if (res.data.success === false) {
+        toast.error(res.data.message);
+        return;
+      }
+      toast.success("All adds are below");
+      setListings(res.data);
+      console.log("All Listings", res.data);
+    } catch (error) {
+      console.log(error);
+      toast.error("Error Fetching Your Adds");
     }
   };
   return (
@@ -197,6 +216,45 @@ const Profile = () => {
       <p className="text-green-700 mt-5">
         {updateSuccess && "Profile updated!"}
       </p>
+      <button
+        onClick={handleListingClick}
+        className="text-green-600 font-semibold w-full"
+      >
+        My Adds
+      </button>
+      <div className="flex flex-col gap-6 mt-4">
+        <h1 className="font-semibold text-2xl text-center">Your Adds</h1>{" "}
+        {listings?.length > 0 ? (
+          listings.map((listing) => (
+            <div
+              key={listing._id}
+              className="flex items-center
+          border p-4 gap-4 justify-between"
+            >
+              <Link to={`/listing/${listing._id}`}>
+                <img
+                  className="h-16 w-16 object-contain "
+                  src={listing.imageUrls[0]}
+                  alt="lisitin-covers"
+                />
+              </Link>
+              <Link
+                className="text-slate-600 font-semibold 
+              flex-1 hover:underline truncate"
+                to={`/listing/${listing._id}`}
+              >
+                <p>{listing.name}</p>
+              </Link>
+              <div className="flex flex-col">
+                <button className="text-red-700 ">Delete</button>
+                <button className="text-green-700 ">Edit</button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <p>No adds to display</p>
+        )}
+      </div>
     </div>
   );
 };

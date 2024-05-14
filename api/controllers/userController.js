@@ -76,6 +76,19 @@ export const deleteUserController = async (req, res, next) => {
 
 //getAlleUserListingsController
 
+// export const getAlleUserListingsController = async (req, res, next) => {
+//   if (req.user.id === req.params.id) {
+//     try {
+//       const listings = await listingModel.find({ userRef: req.params.id });
+//       res.status(200).send(listings);
+//     } catch (error) {
+//       next(error);
+//     }
+//   } else {
+//     return next(errorHandler(401, "You can only view your own listings!"));
+//   }
+// };
+
 // Controller to get all listings associated with a specific user ID
 export const getAlleUserListingsController = async (req, res, next) => {
   // Check if the authenticated user ID matches the requested user ID
@@ -85,11 +98,9 @@ export const getAlleUserListingsController = async (req, res, next) => {
 
   try {
     // Query the database for all listings associated with the user ID
-    const listings = await listingModel.find({ useRef: req.params.id });
+    const listings = await listingModel.find({ userRef: req.params.id });
     // Return the listings in the response
-    return res
-      .status(200)
-      .send({ success: true, message: "ALl listings fetched", listings });
+    return res.status(200).send(listings);
   } catch (error) {
     // If an error occurs during database operation, pass it to the error handling middleware
     next(error);
