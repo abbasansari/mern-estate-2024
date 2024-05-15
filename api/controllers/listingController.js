@@ -108,7 +108,7 @@ export const getSingleListingController = async (req, res, next) => {
     if (!listing) return next(errorHandler(401, "No listing found"));
     res
       .status(200)
-      .json({ success: true, message: "Single Listing fethced", listing });
+      .send({ success: true, message: "Single Listing fethced", listing });
   } catch (error) {
     next(error);
   }
