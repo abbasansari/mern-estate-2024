@@ -23,7 +23,9 @@ import { Link, Navigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
 const Profile = () => {
+  // Redux state management
   const { currentUser, loading, error } = useSelector((state) => state.user);
+  // Ref for file input
   const profileRef = useRef(null);
 
   //to store profile pic in state
@@ -34,11 +36,11 @@ const Profile = () => {
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [listings, setListings] = useState([]);
   const dispatch = useDispatch();
-
+  // State for profile pic upload
   useEffect(() => {
     if (file) handleFileUpload(file);
   }, [file]);
-
+  // Function to handle file upload to Firebase Storage
   const handleFileUpload = (file) => {
     const storage = getStorage(app);
     const fileName = new Date().getTime() + file.name;
@@ -115,7 +117,7 @@ const Profile = () => {
     }
   };
 
-  //handleListingClick
+  // Function to fetch user listings
   const handleListingClick = async () => {
     try {
       const res = await axios.get(`/api/v1/user/listing/${currentUser.id}`);

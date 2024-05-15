@@ -62,3 +62,42 @@ export const deleteListingController = async (req, res, next) => {
     next(error);
   }
 };
+
+//UpdateListingController
+
+// Controller function to update a listing
+export const updateListingController = async (req, res, next) => {
+  // Fetch the listing by ID from the database
+  const initialListing = await listingModel.findById(req.params.id);
+
+  // If listing not found, return a 404 error
+  if (!initialListing) {
+    return next(errorHandler(404, "Listing not found"));
+  }
+
+  // Check if the current user is the owner of the listing
+  if (req.user.id !== initialListing.userRef) {
+    return next(errorHandler(404, "You can update your own listing only"));
+  }
+
+  try {
+    // Update the listing in the database with the provided data
+    const updatedListing = await listingModel.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+
+    // Send a success response with the updated listing
+    res
+      .status(200)
+      .send({
+        success: true,
+        message: "Listing updated",
+        listing: updatedListing,
+      });
+  } catch (error) {
+    // If an error occurs during the update process, pass it to the error handling middleware
+    next(error);
+  }
+};
