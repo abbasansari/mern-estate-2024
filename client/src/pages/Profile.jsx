@@ -39,6 +39,7 @@ const Profile = () => {
   // State for profile pic upload
   useEffect(() => {
     if (file) handleFileUpload(file);
+    handleListingClick();
   }, [file]);
   // Function to handle file upload to Firebase Storage
   const handleFileUpload = (file) => {
@@ -277,7 +278,10 @@ const Profile = () => {
                 >
                   Delete
                 </button>
-                <button className="text-green-700 ">Edit</button>
+                <Link to={`/update-listing/${listing._id}`}>
+                  {" "}
+                  <button className="text-green-700 ">Edit</button>
+                </Link>
               </div>
             </div>
           ))

@@ -89,15 +89,27 @@ export const updateListingController = async (req, res, next) => {
     );
 
     // Send a success response with the updated listing
-    res
-      .status(200)
-      .send({
-        success: true,
-        message: "Listing updated",
-        listing: updatedListing,
-      });
+    res.status(200).send({
+      success: true,
+      message: "Listing updated",
+      listing: updatedListing,
+    });
   } catch (error) {
     // If an error occurs during the update process, pass it to the error handling middleware
+    next(error);
+  }
+};
+
+// getSingleListingController
+
+export const getSingleListingController = async (req, res, next) => {
+  try {
+    const listing = await listingModel.findById(req.params.id);
+    if (!listing) return next(errorHandler(401, "No listing found"));
+    res
+      .status(200)
+      .json({ success: true, message: "Single Listing fethced", listing });
+  } catch (error) {
     next(error);
   }
 };
