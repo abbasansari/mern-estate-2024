@@ -2,6 +2,7 @@ import express from "express";
 import {
   deleteUserController,
   getAlleUserListingsController,
+  getUserByIdController,
   updateUserController,
   userController,
 } from "../controllers/userController.js";
@@ -19,5 +20,7 @@ router.delete("/delete/:id", verifyToken, deleteUserController);
 
 // Gel All User listings || get
 router.get("/listing/:id", verifyToken, getAlleUserListingsController);
+// Gel  User by id || get
+router.get("/:id", verifyToken, getUserByIdController);
 
 export default router;

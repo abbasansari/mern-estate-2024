@@ -106,3 +106,20 @@ export const getAlleUserListingsController = async (req, res, next) => {
     next(error);
   }
 };
+
+//geteUserByIdController to fetcg single user data
+
+export const getUserByIdController = async (req, res, next) => {
+  try {
+    const user = await userModel.findById(req.params.id);
+    if (!user) {
+      return next(errorHandler(401, "User doesn't exist"));
+    }
+    const { password: pass, ...rest } = user._doc;
+    // Handle the case when user is found
+    res.status(200).send({ success: true, rest });
+  } catch (error) {
+    // Handle any errors that occur during the operation
+    next(error);
+  }
+};
