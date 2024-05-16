@@ -219,7 +219,7 @@ const UpdateListing = () => {
             type="text"
             placeholder="description"
             required
-            maxLength={60}
+            maxLength={600}
             minLength={10}
             className="p-3 border rounded-lg"
           />
