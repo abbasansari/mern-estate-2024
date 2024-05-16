@@ -2,6 +2,7 @@ import express from "express";
 import {
   createListingController,
   deleteListingController,
+  getSearchListingController,
   getSingleListingController,
   updateListingController,
 } from "../controllers/listingController.js";
@@ -17,5 +18,8 @@ router.delete("/delete/:id", verifyToken, deleteListingController);
 router.post("/update/:id", verifyToken, updateListingController);
 // Get Single Listing || GET
 router.get("/getsinglelisting/:id", getSingleListingController);
+
+// Get Search || GET
+router.get("/get", getSearchListingController);
 
 export default router;

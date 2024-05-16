@@ -113,3 +113,59 @@ export const getSingleListingController = async (req, res, next) => {
     next(error);
   }
 };
+
+//getSearchListingController Search
+
+export const getSearchListingController = async (req, res, next) => {
+  try {
+    const limit = parseInt(req.query.limit) || 9;
+    const startIndex = parseInt(req.query.startIndex) || 0;
+    //sortig result on offer basees
+    let offer = req.query.offer;
+    if (offer === undefined || offer === "false") {
+      offer = { $in: [false, true] };
+    }
+    //sortig result on furnished basees
+    let furnished = req.query.furnished;
+
+    if (furnished === undefined || furnished === "false") {
+      furnished = { $in: [false, true] };
+    }
+    //sortig result on parking basees
+    let parking = req.query.parking;
+
+    if (parking === undefined || parking === "false") {
+      parking = { $in: [false, true] };
+    }
+    let type = req.query.type;
+
+    if (type === undefined || type === "all") {
+      type = { $in: ["sale", "rent"] };
+    }
+
+    const searchTerm = req.query.searchTerm || "";
+
+    const sort = req.query.sort || "createdAt";
+
+    const order = req.query.order || "desc";
+
+    const listings = await listingModel
+      .find({
+        //hm search name ki base pr krhy h description pr b krskty , $regex means kuch b arha h eg me agr ksi b name mein me h wh dekhao or
+        //$options: i ka mtlb h k uppercase lowercase ko ignore or kam pr focus kro
+        //or name ki term pr search kro or usmein offer frunish parking type ko zhnd mein rkhy hwy
+        name: { $regex: searchTerm, $options: "i" },
+        offer,
+        furnished,
+        parking,
+        type,
+      })
+      .sort({ [sort]: order })
+      .limit(limit)
+      .skip(startIndex);
+
+    return res.status(200).send({ success: true, listings });
+  } catch (error) {
+    next(error);
+  }
+};
