@@ -164,7 +164,7 @@ export const getSearchListingController = async (req, res, next) => {
       .limit(limit)
       .skip(startIndex);
 
-    return res.status(200).send({ success: true, listings });
+    return res.status(200).send(listings);
   } catch (error) {
     next(error);
   }

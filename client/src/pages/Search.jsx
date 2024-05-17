@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ListingItem from "../components/ListingItem";
 
 const Search = () => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const Search = () => {
   const [loading, setLoading] = useState(false);
   const [listings, setListings] = useState([]);
   const [showMore, setShowMore] = useState(false);
-
+  console.log(listings);
   //handleCHange
   const handleChange = (e) => {
     // Handle changes for type selection
@@ -241,6 +242,22 @@ const Search = () => {
         <h1 className="text-3xl border-b-2 p-3 text-slate-700">
           Search Results
         </h1>
+        <div className="p-7 flex flex-wrap gap-4">
+          {!loading && listings.length === 0 && (
+            <p className="text-xl text-slate-700">No listing found!</p>
+          )}
+          {loading && (
+            <p className="text-xl text-slate-700 text-center w-full">
+              Loading...
+            </p>
+          )}
+          {console.log(loading, listings)}
+          {!loading &&
+            listings &&
+            listings.map((listings) => (
+              <ListingItem key={listings._id} listing={listings} />
+            ))}
+        </div>
       </div>
     </div>
   );
