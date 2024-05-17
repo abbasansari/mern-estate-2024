@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Search = () => {
@@ -12,25 +12,36 @@ const Search = () => {
     sort: "created_at",
     order: "desc",
   });
+
+  const [loading, setLoading] = useState(false);
+  const [listings, setListings] = useState([]);
+  const [showMore, setShowMore] = useState(false);
+
   //handleCHange
   const handleChange = (e) => {
+    // Handle changes for type selection
     if (
       e.target.id === "all" ||
       e.target.id === "rent" ||
       e.target.id === "sale"
     ) {
+      // Update the type in state based on the selected option
       setSidebarhData({ ...sidebarhData, type: e.target.id });
     }
 
+    // Handle changes for search term input
     if (e.target.id === "searchTerm") {
+      // Update the search term in state
       setSidebarhData({ ...sidebarhData, searchTerm: e.target.value });
     }
 
+    // Handle changes for checkbox inputs (parking, furnished, offer)
     if (
       e.target.id === "parking" ||
       e.target.id === "furnished" ||
       e.target.id === "offer"
     ) {
+      // Update the corresponding checkbox value in state
       setSidebarhData({
         ...sidebarhData,
         [e.target.id]:
@@ -38,23 +49,21 @@ const Search = () => {
       });
     }
 
+    // Handle changes for sorting dropdown
     if (e.target.id === "sort_order") {
+      // Split the value of the selected option to get sort and order
       const sort = e.target.value.split("_")[0] || "created_at";
-
       const order = e.target.value.split("_")[1] || "desc";
 
+      // Update the sort and order in state
       setSidebarhData({ ...sidebarhData, sort, order });
     }
-    // const { id, type, checked, value } = e.target;
-    // setSidebarhData((prevData) => ({
-    //   ...prevData,
-    //   [id]: type === "checkbox" ? checked : value,
-    // }));
   };
 
-  //handle submit
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
+    // Construct the search query from the state
     const urlParams = new URLSearchParams();
     urlParams.set("searchTerm", sidebarhData.searchTerm);
     urlParams.set("type", sidebarhData.type);
@@ -64,8 +73,62 @@ const Search = () => {
     urlParams.set("sort", sidebarhData.sort);
     urlParams.set("order", sidebarhData.order);
     const searchQuery = urlParams.toString();
+
+    // Navigate to the search page with the constructed search query
     navigate(`/search?${searchQuery}`);
   };
+
+  // Use effect to fetch listings when location.search changes
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchTermFromUrl = urlParams.get("searchTerm");
+    const typeFromUrl = urlParams.get("type");
+    const parkingFromUrl = urlParams.get("parking");
+    const furnishedFromUrl = urlParams.get("furnished");
+    const offerFromUrl = urlParams.get("offer");
+    const sortFromUrl = urlParams.get("sort");
+    const orderFromUrl = urlParams.get("order");
+
+    // Update state with search parameters from URL
+    if (
+      searchTermFromUrl ||
+      typeFromUrl ||
+      parkingFromUrl ||
+      furnishedFromUrl ||
+      offerFromUrl ||
+      sortFromUrl ||
+      orderFromUrl
+    ) {
+      setSidebarhData({
+        searchTerm: searchTermFromUrl || "",
+        type: typeFromUrl || "all",
+        parking: parkingFromUrl === "true" ? true : false,
+        furnished: furnishedFromUrl === "true" ? true : false,
+        offer: offerFromUrl === "true" ? true : false,
+        sort: sortFromUrl || "created_at",
+        order: orderFromUrl || "desc",
+      });
+    }
+
+    // Function to fetch listings based on search query
+    const fetchListings = async () => {
+      setLoading(true);
+      setShowMore(false);
+      const searchQuery = urlParams.toString();
+      const res = await fetch(`/api/v1/listing/get?${searchQuery}`);
+      const data = await res.json();
+      if (data.length > 8) {
+        setShowMore(true);
+      } else {
+        setShowMore(false);
+      }
+      setListings(data);
+      setLoading(false);
+    };
+
+    // Call fetchListings function
+    fetchListings();
+  }, [location.search]);
 
   return (
     <div className="flex flex-col md:flex-row md:min-h-screen">
