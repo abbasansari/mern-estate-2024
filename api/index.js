@@ -7,6 +7,12 @@ import userRouter from "./routes/userRouter.js";
 import authRouter from "./routes/authRouter.js";
 import listingRouter from "./routes/listingRouter.js";
 import cookieParser from "cookie-parser";
+
+//for production
+import path from "path";
+
+//for production
+const __dirname = path.resolve();
 const app = express();
 app.use(express.json());
 dotenv.config();
@@ -22,6 +28,11 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/auth", authRouter);
 //Listing routes
 app.use("/api/v1/listing", listingRouter);
+//for production
+app.use(express.static(path.join(__dirname, "/client/dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "dist", "index.html"));
+});
 
 //Error Middleware
 app.use((err, req, res, next) => {
